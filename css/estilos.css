@@ -1,0 +1,21 @@
+.palabra{
+  vertical-align: middle;
+  letter-spacing: 5px;
+}
+
+.text-loser{
+  color: red;
+  font-size:28px;
+  font-weight: bold;
+}
+
+.text-winner{
+  color: green;
+  font-size:28px;
+  font-weight: bold;
+}
+
+.puntos{
+  font-weight: bold;
+  font-size: 20px;
+}
