@@ -95,20 +95,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (palabra.includes(letra.value.toLowerCase())) {
         const mensaje = document.createElement("p");
-        mensaje.className = "text_error";
-        mensaje.innerHTML = "La letra ya existe en la palabra";
+        mensaje.innerHTML =
+          "<span class='text_error'>La letra ya existe en la palabra</span>";
         document.body.appendChild(mensaje);
         botonEnviar.disabled = true;
-        letra.value = "";
         setTimeout(() => {
           document.body.removeChild(mensaje);
           botonEnviar.disabled = false;
         }, 3000);
+        letra.value = "";
         return;
       }
 
       if (!letrasCorrectas.includes(letra.value.toLowerCase())) {
-        letra.value = "";
         const ingresoIncorrecto = document.createElement("p");
         ingresoIncorrecto.innerHTML =
           "<span class='text_error'>Ingresa una letra correcta</span>";
@@ -118,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.removeChild(ingresoIncorrecto);
           botonEnviar.disabled = false;
         }, 3000);
+        letra.value = "";
         return;
       }
       arrayPalabraOculta.forEach((caracter, index) => {
@@ -182,6 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
       contenedorElement.style.display = "none";
       const h1 = document.createElement("h1");
       h1.innerText = "Gracias por jugar Adivina la palabra 🎆🫡";
+      h1.className = "text_fin_juego";
       document.body.appendChild(h1);
       const p = document.createElement("p");
       p.innerHTML = `Puntuación: <strong class="text_loser-puntos">${puntos}</strong>`;
