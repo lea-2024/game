@@ -1,18 +1,53 @@
 document.addEventListener("DOMContentLoaded", () => {
-  let puntos = 0;
-
   const letra = document.getElementById("letra"); // Obtener el valor del campo de texto letra
   const vidasElement = document.querySelector("#vidas"); // Obtener el elemento que muestra las vidas
   const botonEnviar = document.getElementById("boton"); // Obtener el elemento del boton de envío
   const puntosElement = document.querySelector("#puntos"); // Obtener el elemento que muestra la puntuación
   const contenedorElement = document.getElementById("contenedor"); // Obtener el elemento contenedor
-  const listaIncorrectas = document.querySelector("#listaIncorrectas"); // Obtener elemento de listas de letras incorrectas
+  let listaIncorrectas = document.getElementById("listaIncorrectas");
 
-  function inicio(puntos, finalizo) {
+  let letrasCorrectas = [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "ñ",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+  ];
+
+  function inicio() {
     let vidas = 5;
     let letrasIncorrectas = [];
     let textIncorrectas;
     let mostrarIncorrectas;
+
+    // Recuperar datos de vidas
+    let vidasAnteriores = JSON.parse(localStorage.getItem("vidas"));
+    // mostrar puntos según si juega por primera vez , termina la partida o pierde la partida
+    let puntosAlmacenados = JSON.parse(localStorage.getItem("puntos"));
+    let puntos =
+      vidasAnteriores === 0 || vidasAnteriores === null ? 0 : puntosAlmacenados;
     //Mostrar Vidas
     vidasElement.textContent = "❤️".repeat(vidas);
     puntosElement.textContent = puntos;
@@ -49,18 +84,37 @@ document.addEventListener("DOMContentLoaded", () => {
       palabra = [...palabra];
       let noCoincidencias = 0;
 
-      if (palabra.includes(letra.value)) {
+      if (palabra.includes(letra.value.toLowerCase())) {
         const mensaje = document.createElement("p");
+        mensaje.className = "text_error";
         mensaje.innerHTML = "La letra ya existe en la palabra";
         document.body.appendChild(mensaje);
+        botonEnviar.disabled = true;
         letra.value = "";
         setTimeout(() => {
           document.body.removeChild(mensaje);
+          botonEnviar.disabled = false;
         }, 2000);
         return;
       }
+
+      console.log(letra.value.toLowerCase());
+
+      if (!letrasCorrectas.includes(letra.value.toLowerCase())) {
+        const ingresoIncorrecto = document.createElement("p");
+        ingresoIncorrecto.innerHTML =
+          "<span class='text_error'>Ingresa una letra correcta</span>";
+        document.body.appendChild(ingresoIncorrecto);
+        botonEnviar.disabled = true;
+        setTimeout(() => {
+          document.body.removeChild(ingresoIncorrecto);
+        }, 2000);
+        botonEnviar.disabled = false;
+        return;
+      }
       arrayPalabraOculta.forEach((caracter, index) => {
-        if (letra.value === caracter) {
+        // Comprobar que se ingrese una letra
+        if (letra.value.toLowerCase() === caracter) {
           /* por cada letra correct se suman 10 puntos, si se repite la letra suma igual 10
           por cada una */
           puntos += 10;
@@ -80,15 +134,24 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           noCoincidencias++;
           if (noCoincidencias === arrayPalabraOculta.length) {
-            // if (letrasIncorrectas.length === 0) {
-            //   textIncorrectas = document.createElement("p");
-            //   textIncorrectas.innerHTML = "Letras incorrectas: ";
-            //   document.body.appendChild(textIncorrectas);
-            // }
-            if (letrasIncorrectas.includes(letra.value)) {
+            if (letrasIncorrectas.includes(letra.value.toLowerCase())) {
+              const mensajeIncorrectas = document.createElement("p");
+              mensajeIncorrectas.innerHTML =
+                "<span class='text_error'>La letra ya existe en letras incorrectas</span>";
+              document.body.appendChild(mensajeIncorrectas);
+              botonEnviar.disabled = true;
+              letra.value = "";
+              setTimeout(() => {
+                document.body.removeChild(mensajeIncorrectas);
+                botonEnviar.disabled = false;
+              }, 2000);
               return;
             }
-            letrasIncorrectas = [...letrasIncorrectas, letra.value];
+            letrasIncorrectas = [
+              ...letrasIncorrectas,
+              letra.value.toLowerCase(),
+            ];
+            console.log(letrasIncorrectas);
             mostrarIncorrectas = document.createElement("span");
             for (let letra of letrasIncorrectas) {
               mostrarIncorrectas.innerHTML = `<strong> ${letra.toUpperCase()} </strong> `;
@@ -99,14 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (vidas === 0) {
               repetirFinalizarPartida("text-loser", "GAME OVER 😒😢😵!!");
             }
-            // console.log(vidas);
           }
-
-          // console.log("no existe la letra");
-          // console.log(palabraOculta[index]);
         }
-        // console.log("letra: " + letra.value);
-        // console.log("caracter: " + palabraOculta[index]);
       });
 
       ocultarPalabra.innerText = palabra.join("").toUpperCase();
@@ -123,12 +180,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const p = document.createElement("p");
       p.innerHTML = `Puntuación: <strong>${puntos}</strong>`;
       document.body.appendChild(p);
+      localStorage.removeItem("puntos"); // Borrar puntos almacenados en localStorage
+      localStorage.removeItem("vidas"); // Borrar vidas almacenadas en localStorage
     }
 
     // Repetir partida
-    function repetirPartida(puntos) {
-      finalizo = true;
-      inicio(puntos);
+    function repetirPartida() {
+      location.reload();
     }
 
     // Función para repetir o finalizar la partida
@@ -146,14 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
       btnSi.innerText = "Si";
       document.body.appendChild(btnSi);
       btnSi.addEventListener("click", () => {
-        letra.removeAttribute("disabled");
-        botonEnviar.removeAttribute("disabled");
-        document.body.removeChild(p2);
-        document.body.removeChild(p3);
-        ocultarPalabra.style.display = "none";
-        document.body.removeChild(btnSi);
-        document.body.removeChild(btnNo);
-        repetirPartida(vidas === 0 ? 0 : puntos);
+        localStorage.setItem("vidas", JSON.stringify(vidas)); // Guardar vidas anteriores
+        localStorage.setItem("puntos", JSON.stringify(puntos)); // Guardar puntos anteriores
+
+        repetirPartida();
       });
       const btnNo = document.createElement("button");
       btnNo.innerText = "No";
@@ -170,5 +224,5 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-  inicio(puntos);
+  inicio();
 });
