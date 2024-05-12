@@ -1,3 +1,5 @@
+import listadoPalabras from "../data/palabras.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const letra = document.getElementById("letra"); // Obtener el valor del campo de texto letra
   const vidasElement = document.querySelector("#vidas"); // Obtener el elemento que muestra las vidas
@@ -39,8 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function inicio() {
     let vidas = 5;
     let letrasIncorrectas = [];
-    let textIncorrectas;
     let mostrarIncorrectas;
+
+    // Funcion para generar palabras aleatorias con los datos traidos de palabras.js
+    function palabrasAleatorias() {
+      let indice = Math.floor(Math.random() * listadoPalabras.length);
+      return String(listadoPalabras[indice].palabra);
+    }
 
     // Recuperar datos de vidas
     let vidasAnteriores = JSON.parse(localStorage.getItem("vidas"));
@@ -52,12 +59,15 @@ document.addEventListener("DOMContentLoaded", () => {
     vidasElement.textContent = "❤️".repeat(vidas);
     puntosElement.textContent = puntos;
 
-    let palabraOculta = "adivinanza"; // plabra oculta
+    // Genero la palabra oculta
+    let palabraOculta = palabrasAleatorias();
+
+    // plabra oculta
     let palabra = ""; // palabra que se muestra con '_' la inicializo vacia
 
     // Recorro el cada letra de la palabra oculta y la reempalazo por '_ '
     for (let i = 0; i < palabraOculta.length; i++) {
-      palabra += palabraOculta[i] = "_";
+      palabra += palabraOculta.replace(palabraOculta, "_");
     }
 
     // Crear el elemento parrafo que muestre la cantida de caracteres ocultando las letras con '_'
@@ -80,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     botonEnviar.addEventListener("click", (e) => {
       const arrayPalabraOculta = palabraOculta.split("");
-      // console.log(arrayPalabraOculta);
       palabra = [...palabra];
       let noCoincidencias = 0;
 
@@ -94,13 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           document.body.removeChild(mensaje);
           botonEnviar.disabled = false;
-        }, 2000);
+        }, 3000);
         return;
       }
 
-      console.log(letra.value.toLowerCase());
-
       if (!letrasCorrectas.includes(letra.value.toLowerCase())) {
+        letra.value = "";
         const ingresoIncorrecto = document.createElement("p");
         ingresoIncorrecto.innerHTML =
           "<span class='text_error'>Ingresa una letra correcta</span>";
@@ -108,8 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
         botonEnviar.disabled = true;
         setTimeout(() => {
           document.body.removeChild(ingresoIncorrecto);
-        }, 2000);
-        botonEnviar.disabled = false;
+          botonEnviar.disabled = false;
+        }, 3000);
         return;
       }
       arrayPalabraOculta.forEach((caracter, index) => {
@@ -121,9 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
           puntosElement.textContent = puntos; // Mostrar puntos por cada acierto en pantalla
           // verifica si la letra existe en la palabra
           palabra.splice(index, 1, letra.value);
-          // letraExistente = true;}
           // Si adivina la palabra muestra el mensaje y finaliza ó repite la partida
-          if (palabra.join("") === palabraOculta) {
+          if (palabra.join("").toLowerCase() === palabraOculta.toLowerCase()) {
             puntos += 250;
             puntosElement.textContent = puntos; // Mostrar puntos por cada acierto en pantalla
             repetirFinalizarPartida(
@@ -135,23 +142,22 @@ document.addEventListener("DOMContentLoaded", () => {
           noCoincidencias++;
           if (noCoincidencias === arrayPalabraOculta.length) {
             if (letrasIncorrectas.includes(letra.value.toLowerCase())) {
+              letra.value = "";
               const mensajeIncorrectas = document.createElement("p");
               mensajeIncorrectas.innerHTML =
                 "<span class='text_error'>La letra ya existe en letras incorrectas</span>";
               document.body.appendChild(mensajeIncorrectas);
               botonEnviar.disabled = true;
-              letra.value = "";
               setTimeout(() => {
                 document.body.removeChild(mensajeIncorrectas);
                 botonEnviar.disabled = false;
-              }, 2000);
+              }, 3000);
               return;
             }
             letrasIncorrectas = [
               ...letrasIncorrectas,
               letra.value.toLowerCase(),
             ];
-            console.log(letrasIncorrectas);
             mostrarIncorrectas = document.createElement("span");
             for (let letra of letrasIncorrectas) {
               mostrarIncorrectas.innerHTML = `<strong> ${letra.toUpperCase()} </strong> `;
@@ -178,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       h1.innerText = "Gracias por jugar Adivina la palabra 🎆🫡";
       document.body.appendChild(h1);
       const p = document.createElement("p");
-      p.innerHTML = `Puntuación: <strong>${puntos}</strong>`;
+      p.innerHTML = `Puntuación: <strong class="text_loser-puntos">${puntos}</strong>`;
       document.body.appendChild(p);
       localStorage.removeItem("puntos"); // Borrar puntos almacenados en localStorage
       localStorage.removeItem("vidas"); // Borrar vidas almacenadas en localStorage
@@ -190,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Función para repetir o finalizar la partida
+
     function repetirFinalizarPartida(clase, texto) {
       const p2 = document.createElement("p");
       p2.className = clase;
@@ -199,9 +206,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.appendChild(p2);
       const p3 = document.createElement("p");
       p3.innerText = "¿Quieres jugar de nuevo?";
+      p3.className = "texto_repetir";
       document.body.appendChild(p3);
       const btnSi = document.createElement("button");
-      btnSi.innerText = "Si";
+      btnSi.innerHTML = '<i class="fa-solid fa-check"></i>';
+      btnSi.className = "btn_finalizar btn-si";
       document.body.appendChild(btnSi);
       btnSi.addEventListener("click", () => {
         localStorage.setItem("vidas", JSON.stringify(vidas)); // Guardar vidas anteriores
@@ -210,14 +219,14 @@ document.addEventListener("DOMContentLoaded", () => {
         repetirPartida();
       });
       const btnNo = document.createElement("button");
-      btnNo.innerText = "No";
+      btnNo.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      btnNo.className = "btn_finalizar btn-no";
       document.body.appendChild(btnNo); //Opcion cuando no se quiera jugar de nuevo
       btnNo.addEventListener("click", () => {
         ocultarPalabra.style.display = "none";
         document.body.removeChild(p2);
         document.body.removeChild(p3);
         letrasIncorrectas = [];
-        document.body.removeChild(textIncorrectas);
         document.body.removeChild(btnSi);
         document.body.removeChild(btnNo);
         finalizarPartida(puntos);
