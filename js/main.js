@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let noCoincidencias = 0;
 
       if (palabra.includes(letra.value.toLowerCase())) {
+        console.log(letra.value.toLowerCase());
         const mensaje = document.createElement("p");
         mensaje.innerHTML =
           "<span class='text_error'>La letra ya existe en la palabra</span>";
@@ -106,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (!letrasCorrectas.includes(letra.value.toLowerCase())) {
-        letra.value = "";
         const ingresoIncorrecto = document.createElement("p");
         ingresoIncorrecto.innerHTML =
           "<span class='text_error'>Ingresa una letra correcta</span>";
@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.removeChild(ingresoIncorrecto);
           botonEnviar.disabled = false;
         }, 3000);
+        letra.value = "";
         return;
       }
       arrayPalabraOculta.forEach((caracter, index) => {
