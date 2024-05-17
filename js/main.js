@@ -1,4 +1,4 @@
-import listadoPalabras from "../data/palabras.js";
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const letra = document.getElementById("letra"); // Obtener el valor del campo de texto letra
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "z",
   ];
 
-  function inicio() {
+  function inicio(listadoPalabras) {
     let vidas = 5;
     let letrasIncorrectas = [];
     let mostrarIncorrectas;
@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (!letrasCorrectas.includes(letra.value.toLowerCase())) {
+        letra.value = "";
         const ingresoIncorrecto = document.createElement("p");
         ingresoIncorrecto.innerHTML =
           "<span class='text_error'>Ingresa una letra correcta</span>";
@@ -117,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.removeChild(ingresoIncorrecto);
           botonEnviar.disabled = false;
         }, 3000);
-        letra.value = "";
         return;
       }
       arrayPalabraOculta.forEach((caracter, index) => {
@@ -234,5 +234,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-  inicio();
+
+
+  async function getDatos() {
+    let data = await fetch("../data/palabras.json")
+    let getPalabras = data.json();
+    return getPalabras;
+  };
+
+  (async () => {
+    let listadoPalabras = await getDatos();
+    inicio(listadoPalabras);
+  })();
+
 });
