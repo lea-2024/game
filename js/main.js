@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       botonInicio.className = 'boton_inicio';
       document.body.appendChild(botonInicio);
 
-      botonInicio.addEventListener('click', () => location.href = 'https://lea-2024.github.io/game'); // Ir a página de inicio
+      botonInicio.addEventListener('click', () => location.href = '/game'); // Ir a página de inicio
 
       localStorage.removeItem("puntos"); // Borrar puntos almacenados en localStorage
       localStorage.removeItem("vidas"); // Borrar vidas almacenadas en localStorage
