@@ -126,3 +126,41 @@ html{
 .text_fin_juego{
   color:#333;
 }
+
+/* número incorrectas al iniciar juego */
+
+.texto_incorrectas{
+  font-weight: bold;
+}
+
+/* botón terminar partida */
+
+.boton_terminar{
+  padding: 10px;
+  margin-top: 20px;
+  font-weight: bold;
+  background-color: rgb(236, 165, 165);
+  border-radius: 5px;
+  border:2px solid red;
+  transition: all ease-in-out 500ms;
+}
+
+.boton_terminar:hover{
+  background-color: red;
+  color:white;
+}
+
+/* botón inicio */
+
+.boton_inicio{
+  padding:10px;
+  margin-top: 20px;
+  border:2px solid grey;
+  border-radius: 5px;
+  transition: all ease-in-out 400ms;
+}
+
+.boton_inicio:hover{
+  background-color: grey;
+  color:white;
+}

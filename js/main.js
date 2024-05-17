@@ -4,7 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const botonEnviar = document.getElementById("boton"); // Obtener el elemento del boton de envío
   const puntosElement = document.querySelector("#puntos"); // Obtener el elemento que muestra la puntuación
   const contenedorElement = document.getElementById("contenedor"); // Obtener el elemento contenedor
-  let listaIncorrectas = document.getElementById("listaIncorrectas");
+  let listaIncorrectas = document.getElementById("listaIncorrectas"); // Obtener elemento lista incorrectas
+  let textoIncorrectas = document.querySelector('#textoIncorrectas'); // Obtener el elemento p con ID textoInorrectas
 
   let letrasCorrectas = [
     "a",
@@ -41,6 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let letrasIncorrectas = [];
     let mostrarIncorrectas;
 
+    textoIncorrectas.textContent = 0; // Cantida de letras incorrectas al iniciar juego 
+
     // Funcion para generar palabras aleatorias con los datos traidos de palabras.js
     function palabrasAleatorias() {
       let indice = Math.floor(Math.random() * listadoPalabras.length);
@@ -59,6 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Genero la palabra oculta
     let palabraOculta = palabrasAleatorias();
+
+    // crear elemento párrafo html: palabra 
+    let textoPalabra = document.createElement('p');
+    textoPalabra.innerHTML = '<p>Palabra: </p>';
+    document.body.appendChild(textoPalabra);
 
     // plabra oculta
     let palabra = ""; // palabra que se muestra con '_' la inicializo vacia
@@ -84,6 +92,16 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
     });
 
+
+    // Crear elemento botón terminar la partida
+    const botonTerminar = document.createElement('button');
+    botonTerminar.innerText = 'Terminar Partida';
+    botonTerminar.className = 'boton_terminar';
+    document.body.appendChild(botonTerminar);
+
+    // LLamar a función finalizarPartida al hacer click
+    botonTerminar.addEventListener('click', () => finalizarPartida(puntos));
+
     // Escuchar evento click botón enviar
 
     botonEnviar.addEventListener("click", (e) => {
@@ -92,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let noCoincidencias = 0;
 
       if (palabra.includes(letra.value.toLowerCase())) {
-        console.log(letra.value.toLowerCase());
         const mensaje = document.createElement("p");
         mensaje.innerHTML =
           "<span class='text_error'>La letra ya existe en la palabra</span>";
@@ -139,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else {
           noCoincidencias++;
+
           if (noCoincidencias === arrayPalabraOculta.length) {
             if (letrasIncorrectas.includes(letra.value.toLowerCase())) {
               letra.value = "";
@@ -157,6 +175,9 @@ document.addEventListener("DOMContentLoaded", () => {
               ...letrasIncorrectas,
               letra.value.toLowerCase(),
             ];
+
+            textoIncorrectas.textContent = letrasIncorrectas.length; // Mostrar la cantidad de letras incorrectas
+
             mostrarIncorrectas = document.createElement("span");
             for (let letra of letrasIncorrectas) {
               mostrarIncorrectas.innerHTML = `<strong> ${letra.toUpperCase()} </strong> `;
@@ -177,8 +198,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Función para finalizar la partida
-    function finalizarPartida(puntos) {
+    const finalizarPartida = (puntos) => {
       contenedorElement.style.display = "none";
+      ocultarPalabra.style.display = "none";
+      document.body.removeChild(textoPalabra);
+      if (document.contains(botonTerminar)) {
+        document.body.removeChild(botonTerminar);
+      };
       const h1 = document.createElement("h1");
       h1.innerText = "Gracias por jugar Adivina la palabra 🎆🫡";
       h1.className = "text_fin_juego";
@@ -186,6 +212,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const p = document.createElement("p");
       p.innerHTML = `Puntuación: <strong class="text_loser-puntos">${puntos}</strong>`;
       document.body.appendChild(p);
+      // Crear botón para ir a pagina de inicio
+      const botonInicio = document.createElement('button');
+      botonInicio.innerHTML = '<span><i class="fa-solid fa-house"></i> Página Inicio</span>';
+      botonInicio.className = 'boton_inicio';
+      document.body.appendChild(botonInicio);
+
+      botonInicio.addEventListener('click', () => location.href = '/'); // Ir a página de inicio
+
       localStorage.removeItem("puntos"); // Borrar puntos almacenados en localStorage
       localStorage.removeItem("vidas"); // Borrar vidas almacenadas en localStorage
     }
@@ -198,6 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para repetir o finalizar la partida
 
     function repetirFinalizarPartida(clase, texto) {
+      document.body.removeChild(botonTerminar); // remover botón terminar partida
       const p2 = document.createElement("p");
       p2.className = clase;
       p2.innerText = texto;
