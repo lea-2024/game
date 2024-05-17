@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const letra = document.getElementById("letra"); // Obtener el valor del campo de texto letra
   const vidasElement = document.querySelector("#vidas"); // Obtener el elemento que muestra las vidas
@@ -237,14 +235,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   async function getDatos() {
-    let data = await fetch("../data/palabras.json")
-    let getPalabras = data.json();
-    return getPalabras;
+    try {
+      let data = await fetch("https://github.com/lea-2024/game/data/palabras.json")
+      let getPalabras = data.json();
+      return getPalabras;
+    } catch (error) {
+      console.log('Error de comununicacion con el self', error)
+    }
+
   };
 
   (async () => {
-    let listadoPalabras = await getDatos();
-    inicio(listadoPalabras);
+    try {
+      let listadoPalabras = await getDatos();
+      inicio(listadoPalabras);
+    } catch (error) {
+      console.log('Error en conexion a la obtencion de datos', error)
+    }
   })();
 
 });
