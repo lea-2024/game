@@ -236,11 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function getDatos() {
     try {
-      let data = await fetch("https://github.com/lea-2024/game/data/palabras.json")
+      let data = await fetch("data/palabras.json");
       let getPalabras = data.json();
       return getPalabras;
     } catch (error) {
-      console.log('Error de comununicacion con el self', error)
+      console.log('Error de comununicacion con el servidor', error)
     }
 
   };
